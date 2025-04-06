@@ -20,7 +20,7 @@ Second, you need to have the PlayerLib's service declared in your app's manifest
 1. Declare the service in your 'AndroidManifest.xml' of your app:
     ```xml
         <service
-            android:name="com.edergi.playerlib.service.PlaybackService"
+            android:name="com.edergi.playerlibapp.service.PlaybackService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="true">
             <intent-filter>

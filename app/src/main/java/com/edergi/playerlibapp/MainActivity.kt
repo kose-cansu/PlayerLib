@@ -30,9 +30,9 @@ class MainActivity: AppCompatActivity() {
         askNotificationPermission()
 
         val track = Track(
-            title = "Ramiz Dayı",
-            description = "Herkes öldürür sevdiğini kardeş.",
-            m3u8Url = "https://sesli-edergi.keove.com/birinci/tuncel-kurtiz-oysa-herkes-oldurur-sevdigini-siir-oscar-wilde.m3u8"
+            title = "EDergi",
+            description = "Öne Çıkanlar",
+            m3u8Url = "https://e-dergi.turktelekom.com.tr/api/media/document/voice-newsletter/stream/679fb444733c8b5559fbce7a/output.m3u8"
         )
 
         val tracks = mutableListOf<Track>().apply {
