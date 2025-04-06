@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="testing purposes only"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="play tracks"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <Button
+        android:id="@+id/stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
+
+    <Button
+        android:id="@+id/pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="pause"
+        app:layout_constraintEnd_toEndOf="@+id/stop"
+        app:layout_constraintStart_toStartOf="@+id/stop"
+        app:layout_constraintTop_toBottomOf="@+id/stop" />
+
+    <Button
+        android:id="@+id/seekToNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="seekToNext"
+        app:layout_constraintEnd_toEndOf="@+id/pause"
+        app:layout_constraintStart_toStartOf="@+id/pause"
+        app:layout_constraintTop_toBottomOf="@+id/pause" />
+
+    <Button
+        android:id="@+id/seekToPrevious"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="seekToPrevious"
+        app:layout_constraintEnd_toEndOf="@+id/seekToNext"
+        app:layout_constraintStart_toStartOf="@+id/seekToNext"
+        app:layout_constraintTop_toBottomOf="@+id/seekToNext" />
+
+    <Button
+        android:id="@+id/setPlaybackSpeed1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="speed 1"
+        app:layout_constraintEnd_toStartOf="@+id/setPlaybackSpeed1_25"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekToPrevious" />
+
+    <Button
+        android:id="@+id/setPlaybackSpeed1_25"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="speed 1.25"
+        app:layout_constraintEnd_toStartOf="@+id/setPlaybackSpeed1_5"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/setPlaybackSpeed1"
+        app:layout_constraintTop_toBottomOf="@+id/seekToPrevious" />
+
+    <Button
+        android:id="@+id/setPlaybackSpeed1_5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="speed 1.5"
+        app:layout_constraintEnd_toStartOf="@+id/setPlaybackSpeed2"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/setPlaybackSpeed1_25"
+        app:layout_constraintTop_toBottomOf="@+id/seekToPrevious" />
+
+    <Button
+        android:id="@+id/setPlaybackSpeed2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="speed 2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/setPlaybackSpeed1_5"
+        app:layout_constraintTop_toBottomOf="@+id/seekToPrevious" />
+
+    <Button
+        android:id="@+id/play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="just play"
+        app:layout_constraintEnd_toStartOf="@+id/stop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
