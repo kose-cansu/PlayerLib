@@ -2,10 +2,9 @@ package com.edergi.playerlib.model
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import java.util.UUID
 
 data class Track(
-    val id: String = UUID.randomUUID().toString(),
+    val id: String,
     val title: String,
     val description: String? = null,
     val m3u8Url: String,
@@ -21,7 +20,7 @@ data class Track(
         fun from(serializedTrack: String): Track? {
             val parts = serializedTrack.split("|")
             return Track(
-                id = parts.getOrNull(0)?.takeIf { UUID.fromString(it) != null } ?: return null,
+                id = parts.getOrNull(0) ?: return null,
                 title = parts.getOrNull(1) ?: return null,
                 description = parts.getOrNull(2),
                 m3u8Url = parts.getOrNull(3) ?: return null,

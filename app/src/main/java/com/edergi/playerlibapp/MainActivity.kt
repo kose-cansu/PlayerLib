@@ -30,6 +30,7 @@ class MainActivity: AppCompatActivity() {
         askNotificationPermission()
 
         val track = Track(
+            id = "1234",
             title = "EDergi",
             description = "Öne Çıkanlar",
             m3u8Url = "https://e-dergi.turktelekom.com.tr/api/media/document/voice-newsletter/stream/679fb444733c8b5559fbce7a/output.m3u8"
