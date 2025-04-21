@@ -39,6 +39,7 @@ internal fun Track.toMediaItem(): MediaItem {
     }.build()
     return MediaItem.Builder()
         .setUri(m3u8Url)
+        .setMediaId(id)
         .setMediaMetadata(metadata)
         .build()
 }
