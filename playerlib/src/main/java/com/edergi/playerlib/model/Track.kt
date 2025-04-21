@@ -9,7 +9,8 @@ data class Track(
     val description: String? = null,
     val m3u8Url: String,
     val bundleKey: String? = null,
-    val bundleValue: String? = null
+    val bundleValue: String? = null,
+    val paperId: String
 ) {
 
     companion object {
@@ -25,7 +26,8 @@ data class Track(
                 description = parts.getOrNull(2),
                 m3u8Url = parts.getOrNull(3) ?: return null,
                 bundleKey = parts.getOrNull(4),
-                bundleValue = parts.getOrNull(5)
+                bundleValue = parts.getOrNull(5),
+                paperId = parts.getOrNull(6) ?: return null
             )
         }
     }
@@ -35,6 +37,7 @@ data class Track(
 internal fun Track.toMediaItem(): MediaItem {
     val metadata = MediaMetadata.Builder().apply {
         setTitle(title)
+        setAlbumArtist(paperId)
         setDescription(description)
     }.build()
     return MediaItem.Builder()
@@ -51,5 +54,6 @@ fun Track.serialize(): String =
         description ?: "",
         m3u8Url,
         bundleKey ?: "",
-        bundleValue ?: ""
+        bundleValue ?: "",
+        paperId ?: ""
     ).joinToString("|")
