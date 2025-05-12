@@ -23,7 +23,7 @@ import com.edergi.playerlib.model.toMediaItem
 import com.edergi.playerlib.service.PlaybackService
 
 private const val DEFAULT_CHANNEL_ID = "player_lib_channel"
-private const val DEFAULT_NOTIFICATION_ID = 5858
+private const val DEFAULT_NOTIFICATION_ID = 2000
 private const val DEFAULT_CHANNEL_NAME = "Player Lib Channel"
 
 class PlayerLib(internal val config: Config) {

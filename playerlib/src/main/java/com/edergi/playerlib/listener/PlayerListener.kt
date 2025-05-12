@@ -70,6 +70,5 @@ sealed interface PlayerEvent {
     data class MediaItemTransition(val mediaItem: MediaItem?, val reason: Int): PlayerEvent
     data class MediaMetadataChanged(val mediaMetadata: MediaMetadata): PlayerEvent
     data class PlayerErrorChanged(val error: PlaybackException?): PlayerEvent
-    data class OnPositionDiscontinuity(val oldPosition: Player.PositionInfo, val newPosition: Player.PositionInfo, val reason: Int):
-        PlayerEvent
+    data class OnPositionDiscontinuity(val oldPosition: Player.PositionInfo, val newPosition: Player.PositionInfo, val reason: Int): PlayerEvent
 }

@@ -33,7 +33,7 @@ class MainActivity: AppCompatActivity() {
             id = "1234",
             title = "EDergi",
             description = "Öne Çıkanlar",
-            m3u8Url = "https://e-dergi.turktelekom.com.tr/api/media/document/voice-newsletter/stream/679fb444733c8b5559fbce7a/output.m3u8",
+            m3u8Url = "https://cs25-2v4.vkuseraudio.net/s/v1/ac/6eEbeJLYA40oJpXiZweJ4kxFQbVUFlthr122mnRtEQkQrgQhb2zT3PUJTKYt7RBEJMuqylePyew0eoF-fmsI6Ag3QpmudRgotTQJEzadtSOXFSkcykXiLVXHZQdxOINZO-u4ujacHRlZWz3rV0FJnXjZTezQtHtZZSCBOz8hku4jm_k/index.m3u8",
             paperId = "5678"
         )
 
@@ -78,7 +78,7 @@ class MainActivity: AppCompatActivity() {
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 5858)
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 2000)
             }
         }
     }
