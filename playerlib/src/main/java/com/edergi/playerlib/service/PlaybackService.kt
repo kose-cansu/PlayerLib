@@ -21,22 +21,22 @@ class PlaybackService: MediaSessionService() {
 
         PlayerLib.instance.config.onCreated?.invoke()
 
-        val player = ExoPlayer.Builder(this)
+        val player = ExoPlayer.Builder(applicationContext)
             .build()
 
         player.addListener(PlayerLib.instance.playerListener)
 
-        setMediaNotificationProvider(PLibMediaNotificationProvider(this))
+        setMediaNotificationProvider(PLibMediaNotificationProvider(applicationContext))
 
-        mediaSession = MediaSession.Builder(this, player).apply {
+        mediaSession = MediaSession.Builder(applicationContext, player).apply {
             PlayerLib.instance.config.sessionActivity?.let { activity ->
-                val intent = Intent(this@PlaybackService, activity).apply {
+                val intent = Intent(applicationContext, activity).apply {
                     flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
                 }
 
                 setSessionActivity(
                     PendingIntent.getActivity(
-                        this@PlaybackService,
+                        applicationContext,
                         2000,
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
