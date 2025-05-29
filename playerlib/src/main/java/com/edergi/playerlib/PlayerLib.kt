@@ -35,6 +35,8 @@ class PlayerLib(internal val config: Config) {
 
     private var mediaController: MediaController? = null
 
+    private val pendingActions = mutableListOf<(MediaController) -> Unit>()
+
     internal val playerListener = PlayerListener(config)
 
     init {
@@ -43,6 +45,10 @@ class PlayerLib(internal val config: Config) {
         controllableFuture.addListener({
             mediaController = if (controllableFuture.isDone) {
                 controllableFuture.get().also {
+                    synchronized(pendingActions) {
+                        pendingActions.forEach { action -> action(it) }
+                        pendingActions.clear()
+                    }
                     if (config.periodicPositionUpdateEnabled == true) {
                         PositionUpdateTracker(
                             updateIntervalMs = config.positionUpdateDelay,
@@ -58,104 +64,119 @@ class PlayerLib(internal val config: Config) {
 
     }
 
+    private fun runWhenReady(action: (MediaController) -> Unit) {
+        val controller = mediaController
+        if (controller != null) {
+            action(controller)
+        } else {
+            synchronized(pendingActions) {
+                pendingActions.add(action)
+            }
+        }
+    }
+
     fun play(track: Track) {
-        mediaController?.setMediaItem(track.toMediaItem())
-        mediaController?.prepare()
-        mediaController?.playWhenReady = true
+        runWhenReady { controller ->
+            controller.setMediaItem(track.toMediaItem())
+            controller.prepare()
+            controller.playWhenReady = true
+        }
     }
 
     fun play(tracks: List<Track>) {
-        mediaController?.setMediaItems(tracks.map(Track::toMediaItem))
-        mediaController?.prepare()
-        mediaController?.playWhenReady = true
+        runWhenReady { controller ->
+            controller.setMediaItems(tracks.map(Track::toMediaItem))
+            controller.prepare()
+            controller.playWhenReady = true
+        }
     }
 
     fun pause() {
-        mediaController?.pause()
+        runWhenReady { it.pause() }
     }
 
     fun seekToNextMediaItem() {
-        mediaController?.seekToNextMediaItem()
+        runWhenReady { it.seekToNextMediaItem() }
     }
 
     fun seekToNext() {
-        mediaController?.seekToNext()
+        runWhenReady { it.seekToNext() }
     }
 
     fun seekToPrevious() {
-        mediaController?.seekToPrevious()
+        runWhenReady { it.seekToPrevious() }
     }
 
     fun seekToPreviousMediaItem() {
-        mediaController?.seekToPreviousMediaItem()
+        runWhenReady { it.seekToPreviousMediaItem() }
     }
 
     fun seekTo(position: Long) {
-        mediaController?.seekTo(position)
+        runWhenReady { it.seekTo(position) }
     }
 
     fun seekToIndex(mediaIndex: Int, position: Long = 0L) {
-        mediaController?.seekTo(mediaIndex, position)
+        runWhenReady { it.seekTo(mediaIndex, position) }
     }
 
     fun addTracks(tracks: List<Track>) {
-        mediaController?.addMediaItems(tracks.map(Track::toMediaItem))
+        runWhenReady { it.addMediaItems(tracks.map(Track::toMediaItem)) }
     }
 
     fun addTrack(track: Track) {
-        mediaController?.addMediaItem(track.toMediaItem())
+        runWhenReady { it.addMediaItem(track.toMediaItem()) }
     }
 
     fun release() {
-        mediaController?.release()
+        runWhenReady { it.release() }
     }
 
     fun stop() {
-        mediaController?.stop()
+        runWhenReady { it.stop() }
     }
 
     fun removeTracks(fromIndex: Int, toIndex: Int) {
-        mediaController?.removeMediaItems(fromIndex, toIndex)
+        runWhenReady { it.removeMediaItems(fromIndex, toIndex) }
     }
 
     fun clearMediaItems() {
-        mediaController?.clearMediaItems()
+        runWhenReady { it.clearMediaItems() }
     }
 
     fun addPlayerListener(listener: Player.Listener) {
-        mediaController?.addListener(listener)
+        runWhenReady { it.addListener(listener) }
     }
 
     fun removePlayerListener(listener: Player.Listener) {
-        mediaController?.removeListener(listener)
+        runWhenReady { it.removeListener(listener) }
     }
 
     fun moveMediaItem(fromIndex: Int, toIndex: Int) {
-        mediaController?.moveMediaItem(fromIndex, toIndex)
+        runWhenReady { it.moveMediaItem(fromIndex, toIndex) }
     }
 
     fun moveMediaItems(fromIndex: Int, toIndex: Int, newIndex: Int) {
-        mediaController?.moveMediaItems(fromIndex, toIndex, newIndex)
+        runWhenReady { it.moveMediaItems(fromIndex, toIndex, newIndex) }
     }
 
     fun setMediaItems(mediaItems: List<MediaItem>) {
-        mediaController?.setMediaItems(mediaItems)
+        runWhenReady { it.setMediaItems(mediaItems) }
     }
 
     fun setMediaItem(mediaItem: MediaItem) {
-        mediaController?.setMediaItem(mediaItem)
+        runWhenReady { it.setMediaItem(mediaItem) }
     }
 
     fun setMediaItems(mediaItems: List<MediaItem>, startIndex: Int, startPositionMs: Long) {
-        mediaController?.setMediaItems(mediaItems, startIndex, startPositionMs)
+        runWhenReady { it.setMediaItems(mediaItems, startIndex, startPositionMs) }
     }
 
     fun play() {
-        mediaController?.play()
+        runWhenReady { it.play() }
     }
 
     fun setPlayWhenReady(playWhenReady: Boolean) {
-        mediaController?.playWhenReady = playWhenReady
+        runWhenReady { it.playWhenReady = playWhenReady }
     }
 
     fun hasPreviousMediaItem(): Boolean = mediaController?.hasPreviousMediaItem() == true
@@ -163,7 +184,7 @@ class PlayerLib(internal val config: Config) {
     fun hasNextMediaItem(): Boolean = mediaController?.hasNextMediaItem() == true
 
     fun setPlaybackSpeed(speed: Float) {
-        mediaController?.setPlaybackSpeed(speed)
+        runWhenReady { it.setPlaybackSpeed(speed) }
     }
 
     class Config private constructor(
