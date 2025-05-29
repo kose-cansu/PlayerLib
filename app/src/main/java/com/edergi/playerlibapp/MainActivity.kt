@@ -74,6 +74,12 @@ class MainActivity: AppCompatActivity() {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        PlayerLib.instance.clearMediaItems()
+        PlayerLib.instance.stop()
+    }
+
     // this is required (for some versions of android) for PlayerLib to be able to display foreground service
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

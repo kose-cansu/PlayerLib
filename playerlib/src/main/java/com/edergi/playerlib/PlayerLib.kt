@@ -37,25 +37,30 @@ class PlayerLib(internal val config: Config) {
 
     internal val playerListener = PlayerListener(config)
 
-    init {
+    private var positionUpdateTracker: PositionUpdateTracker? = null
 
+    init {
         val controllableFuture = MediaController.Builder(context, sessionToken).buildAsync()
         controllableFuture.addListener({
             mediaController = if (controllableFuture.isDone) {
                 controllableFuture.get().also {
-                    if (config.periodicPositionUpdateEnabled == true) {
-                        PositionUpdateTracker(
-                            updateIntervalMs = config.positionUpdateDelay,
-                            mediaController = it,
-                            onUpdate = config.onPlaybackPositionUpdate
-                        ).start()
-                    }
+                    startPositionUpdateTrackerIfNeeded()
                 }
             } else {
                 null
             }
         }, ContextCompat.getMainExecutor(context))
+    }
 
+    private fun startPositionUpdateTrackerIfNeeded() {
+        if (config.periodicPositionUpdateEnabled == true && config.onPlaybackPositionUpdate != null && mediaController != null) {
+            positionUpdateTracker?.stop()
+            positionUpdateTracker = PositionUpdateTracker(
+                updateIntervalMs = config.positionUpdateDelay,
+                mediaController = mediaController,
+                onUpdate = config.onPlaybackPositionUpdate
+            ).also { it.start() }
+        }
     }
 
     fun play(track: Track) {
@@ -193,7 +198,7 @@ class PlayerLib(internal val config: Config) {
         internal val setShouldStayAwake: Boolean,
         internal val onCreated: (() -> Unit)?,
         internal val onDestroy: (() -> Unit)?,
-        internal val onPlaybackPositionUpdate: ((PlaybackDuration?, MediaItem?) -> Unit)?,
+        internal var onPlaybackPositionUpdate: ((PlaybackDuration?, MediaItem?) -> Unit)?,
         internal val onTaskRemoved: (() -> Unit)?,
         internal val onGetSession: ((MediaSession?) -> Unit)?,
         internal val onStartCommand: (() -> Unit)?,
@@ -302,6 +307,10 @@ class PlayerLib(internal val config: Config) {
 
             fun setOnPlaybackPositionUpdate(onPlaybackPositionUpdate: (PlaybackDuration?, MediaItem?) -> Unit) = apply {
                 this.onPlaybackPositionUpdate = onPlaybackPositionUpdate
+                if (isInitialized) {
+                    instance.config.onPlaybackPositionUpdate = onPlaybackPositionUpdate
+                    instance.startPositionUpdateTrackerIfNeeded()
+                }
             }
 
             fun setOnAudioFocusLoss(onAudioFocusLoss: () -> Unit) = apply {
