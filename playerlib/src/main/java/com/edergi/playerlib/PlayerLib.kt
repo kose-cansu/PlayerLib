@@ -39,8 +39,9 @@ class PlayerLib(internal val config: Config) {
 
     internal val playerListener = PlayerListener(config)
 
-    init {
+    private var positionUpdateTracker: PositionUpdateTracker? = null
 
+    init {
         val controllableFuture = MediaController.Builder(context, sessionToken).buildAsync()
         controllableFuture.addListener({
             mediaController = if (controllableFuture.isDone) {
@@ -49,19 +50,23 @@ class PlayerLib(internal val config: Config) {
                         pendingActions.forEach { action -> action(it) }
                         pendingActions.clear()
                     }
-                    if (config.periodicPositionUpdateEnabled == true) {
-                        PositionUpdateTracker(
-                            updateIntervalMs = config.positionUpdateDelay,
-                            mediaController = it,
-                            onUpdate = config.onPlaybackPositionUpdate
-                        ).start()
-                    }
+                    startPositionUpdateTracker(it)
                 }
             } else {
                 null
             }
         }, ContextCompat.getMainExecutor(context))
+    }
 
+    private fun startPositionUpdateTracker(controller: MediaController) {
+        positionUpdateTracker?.stop()
+        if (config.periodicPositionUpdateEnabled == true) {
+            positionUpdateTracker = PositionUpdateTracker(
+                updateIntervalMs = config.positionUpdateDelay,
+                mediaController = controller,
+                onUpdate = config.onPlaybackPositionUpdate
+            ).also { it.start() }
+        }
     }
 
     private fun runWhenReady(action: (MediaController) -> Unit) {
@@ -129,6 +134,8 @@ class PlayerLib(internal val config: Config) {
 
     fun release() {
         runWhenReady { it.release() }
+        positionUpdateTracker?.stop()
+        positionUpdateTracker = null
     }
 
     fun stop() {
@@ -499,12 +506,9 @@ class PlayerLib(internal val config: Config) {
             get() = _instance ?: throw UninitializedPropertyAccessException("PlayerLib is not initialized. Use PlayerLibFactory first.")
 
         internal fun initialize(playerLib: PlayerLib) {
-            if (_instance == null) {
-                synchronized(this) {
-                    if (_instance == null) {
-                        _instance = playerLib
-                    }
-                }
+            synchronized(this) {
+                _instance?.release()
+                _instance = playerLib
             }
         }
 
