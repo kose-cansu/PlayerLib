@@ -10,6 +10,8 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import com.edergi.playerlib.PlayerLib
 import com.edergi.playerlib.notification.PLibMediaNotificationProvider
+import com.google.common.util.concurrent.Futures
+import com.google.common.util.concurrent.ListenableFuture
 
 class PlaybackService: MediaSessionService() {
 
@@ -21,30 +23,47 @@ class PlaybackService: MediaSessionService() {
 
         PlayerLib.instance.config.onCreated?.invoke()
 
-        val player = ExoPlayer.Builder(applicationContext)
-            .build()
-
+        val player = ExoPlayer.Builder(applicationContext).build()
         player.addListener(PlayerLib.instance.playerListener)
 
         setMediaNotificationProvider(PLibMediaNotificationProvider(applicationContext))
 
-        mediaSession = MediaSession.Builder(applicationContext, player).apply {
-            PlayerLib.instance.config.sessionActivity?.let { activity ->
-                val intent = Intent(applicationContext, activity).apply {
-                    flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                }
+        val sessionBuilder = MediaSession.Builder(applicationContext, player)
 
-                setSessionActivity(
-                    PendingIntent.getActivity(
-                        applicationContext,
-                        2000,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                )
+        PlayerLib.instance.config.sessionActivity?.let { activity ->
+            val intent = Intent(applicationContext, activity).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
             }
-        }.build()
 
+            sessionBuilder.setSessionActivity(
+                PendingIntent.getActivity(
+                    applicationContext,
+                    2000,
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+            )
+        }
+
+        sessionBuilder.setCallback(object : MediaSession.Callback {
+            override fun onPlaybackResumption(
+                session: MediaSession,
+                controller: MediaSession.ControllerInfo
+            ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> {
+                session.player.play()
+
+                val emptyMediaItems = MediaSession.MediaItemsWithStartPosition(
+                    listOf(),
+                    0,
+                    0L
+                )
+
+                return Futures.immediateFuture(emptyMediaItems)
+            }
+        })
+
+
+        mediaSession = sessionBuilder.build()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {

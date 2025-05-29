@@ -10,7 +10,7 @@ class PlayerLibApp: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        PlayerLibFactory.init(this) {
+        PlayerLibFactory.init(applicationContext) {
 
             setSessionActivity(MainActivity::class.java)
 
