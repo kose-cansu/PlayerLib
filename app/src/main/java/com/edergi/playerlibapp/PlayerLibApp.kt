@@ -3,6 +3,7 @@ package com.edergi.playerlibapp
 import android.app.Application
 import android.util.Log
 import androidx.media3.exoplayer.ExoPlayer
+import com.edergi.playerlib.PlayerLib
 import com.edergi.playerlib.PlayerLibFactory
 import com.edergi.playerlib.listener.PlayerEvent
 
@@ -50,8 +51,16 @@ class PlayerLibApp: Application() {
                 }
             }
 
-            setOnAudioFocusGain {
-                log("Audio focused gained.")
+            setOnAudioFocusLoss {
+                PlayerLib.instance.pause() // Oynatıcıyı durdur
+            }
+
+            setOnAudioFocusLossTransient {
+                PlayerLib.instance.pause() // Geçici kayıpta da durdur
+            }
+
+            setOnAudioFocusLossTransientCanDuck {
+                PlayerLib.instance.setPlaybackSpeed(0.5f) // İsterseniz sesi kısabilir veya hızı düşürebilirsiniz
             }
 
             setOnCreated {

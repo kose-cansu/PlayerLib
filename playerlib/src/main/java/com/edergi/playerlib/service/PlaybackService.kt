@@ -3,6 +3,9 @@ package com.edergi.playerlib.service
 import android.app.PendingIntent
 import android.content.Intent
 import androidx.annotation.OptIn
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C.CONTENT_TYPE_MUSIC
+import androidx.media3.common.C.USAGE_MEDIA
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -23,7 +26,16 @@ class PlaybackService: MediaSessionService() {
 
         PlayerLib.instance.config.onCreated?.invoke()
 
-        val player = ExoPlayer.Builder(applicationContext).build()
+        val player = ExoPlayer.Builder(applicationContext)
+            .setHandleAudioBecomingNoisy(true)
+            .build()
+
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(USAGE_MEDIA)
+            .build()
+
+        player.setAudioAttributes(audioAttributes, true)
+
         player.addListener(PlayerLib.instance.playerListener)
 
         setMediaNotificationProvider(PLibMediaNotificationProvider(applicationContext))

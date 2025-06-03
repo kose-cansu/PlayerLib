@@ -16,8 +16,8 @@ class PLibMediaNotificationProvider(
     context: Context
 ): DefaultMediaNotificationProvider(context) {
 
-    override fun getNotificationContentText(metadata: MediaMetadata): CharSequence? {
-        return metadata.description
+    override fun getNotificationContentText(metadata: MediaMetadata): CharSequence {
+        return "Öne Çıkan Haberler"
     }
 
     override fun getNotificationContentTitle(metadata: MediaMetadata): CharSequence? {
