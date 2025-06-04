@@ -17,6 +17,7 @@ internal fun Track.toMediaItem(): MediaItem {
     val metadata = MediaMetadata.Builder().apply {
         setTitle(title)
         setAlbumArtist(paperId)
+        setArtist("Öne Çıkan Haberler")
         setDescription(description)
     }.build()
     return MediaItem.Builder()
