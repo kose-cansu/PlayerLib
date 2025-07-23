@@ -125,8 +125,12 @@ class PlayerLib(internal val config: Config) {
     }
 
     fun addTracks(tracks: List<Track>) {
-        runWhenReady { it.addMediaItems(tracks.map(Track::toMediaItem)) }
+        runWhenReady {
+            it.addMediaItems(tracks.map(Track::toMediaItem))
+            it.playWhenReady = false
+        }
     }
+
 
     fun addTrack(track: Track) {
         runWhenReady { it.addMediaItem(track.toMediaItem()) }
