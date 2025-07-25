@@ -46,6 +46,11 @@ class PlayerLib(internal val config: Config) {
         controllableFuture.addListener({
             mediaController = if (controllableFuture.isDone) {
                 controllableFuture.get().also {
+                    it.addListener(object : Player.Listener {
+                        override fun onIsPlayingChanged(isPlaying: Boolean) {
+                            config.onPlayerEvent?.invoke(PlayerEvent.IsPlayingChanged(isPlaying))
+                        }
+                    })
                     synchronized(pendingActions) {
                         pendingActions.forEach { action -> action(it) }
                         pendingActions.clear()
