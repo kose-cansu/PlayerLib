@@ -87,6 +87,7 @@ class PlayerLib(internal val config: Config) {
 
     fun play(track: Track) {
         runWhenReady { controller ->
+            controller.stop()
             controller.setMediaItem(track.toMediaItem())
             controller.prepare()
             controller.playWhenReady = true
@@ -95,6 +96,7 @@ class PlayerLib(internal val config: Config) {
 
     fun play(tracks: List<Track>) {
         runWhenReady { controller ->
+            controller.stop()
             controller.setMediaItems(tracks.map(Track::toMediaItem))
             controller.prepare()
             controller.playWhenReady = true
