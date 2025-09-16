@@ -236,7 +236,9 @@ class PlayerLib(internal val config: Config) {
         internal val onAudioFocusLoss: (() -> Unit)?,
         internal val onAudioFocusGain: (() -> Unit)?,
         internal val onAudioFocusLossTransient: (() -> Unit)?,
-        internal val onAudioFocusLossTransientCanDuck: (() -> Unit)?
+        internal val onAudioFocusLossTransientCanDuck: (() -> Unit)?,
+        internal val onCategoryNextCommand: (() -> Unit)?,
+        internal val onCategoryPrevCommand: (() -> Unit)?
     ) {
         class Builder {
             private var context: Context? = null
@@ -274,9 +276,11 @@ class PlayerLib(internal val config: Config) {
             private var onAudioFocusGain: (() -> Unit)? = null
             private var onAudioFocusLossTransient: (() -> Unit)? = null
             private var onAudioFocusLossTransientCanDuck: (() -> Unit)? = null
+            private var onCategoryNextCommand: (() -> Unit)? = null
+            private var onCategoryPrevCommand: (() -> Unit)? = null
 
             fun setContext(context: Context) = apply {
-                this.context  = context.applicationContext
+                this.context = context.applicationContext
             }
 
             fun setSessionActivity(activityClass: Class<out Activity>) {
@@ -415,9 +419,16 @@ class PlayerLib(internal val config: Config) {
                 this.showPlayButtonIfPlaybackIsSuppressed = showPlayButtonIfPlaybackIsSuppressed
             }
 
+            fun setOnCategoryNextCommand(block: () -> Unit) = apply {
+                this.onCategoryNextCommand = block
+            }
+
+            fun setOnCategoryPrevCommand(block: () -> Unit) = apply {
+                this.onCategoryPrevCommand = block
+            }
+
             fun build(): Config {
                 requireNotNull(context) { "Context is required." }
-
                 val config = Config(
                     context = context!!,
                     sessionActivity = sessionActivity,
@@ -453,9 +464,10 @@ class PlayerLib(internal val config: Config) {
                     onAudioFocusLoss = onAudioFocusLoss,
                     onAudioFocusGain = onAudioFocusGain,
                     onAudioFocusLossTransient = onAudioFocusLossTransient,
-                    onAudioFocusLossTransientCanDuck = onAudioFocusLossTransientCanDuck
+                    onAudioFocusLossTransientCanDuck = onAudioFocusLossTransientCanDuck,
+                    onCategoryNextCommand = onCategoryNextCommand,
+                    onCategoryPrevCommand = onCategoryPrevCommand
                 )
-
                 return config
             }
         }
@@ -473,14 +485,11 @@ class PlayerLib(internal val config: Config) {
                 mediaController?.let { controller ->
                     val duration = controller.duration
                     val position = controller.currentPosition
-
                     val playbackDuration = if (duration != C.TIME_UNSET) {
                         PlaybackDuration(duration, position)
                     } else null
-
                     onUpdate?.invoke(playbackDuration, controller.currentMediaItem)
                 } ?: onUpdate?.invoke(null, null)
-
                 handler.postDelayed(this, updateIntervalMs)
             }
         }
@@ -522,5 +531,4 @@ class PlayerLib(internal val config: Config) {
         val isInitialized: Boolean
             get() = _instance != null
     }
-
 }
