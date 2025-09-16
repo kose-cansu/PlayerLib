@@ -20,12 +20,12 @@ import com.google.common.util.concurrent.ListenableFuture
 
 class PlaybackService: MediaSessionService() {
 
-    private var mediaSession: MediaSession? = null
-
     object Commands {
         const val CATEGORY_NEXT = "edergi.CATEGORY_NEXT"
         const val CATEGORY_PREV = "edergi.CATEGORY_PREV"
     }
+
+    private var mediaSession: MediaSession? = null
 
     @OptIn(UnstableApi::class)
     override fun onCreate() {
@@ -54,13 +54,16 @@ class PlaybackService: MediaSessionService() {
             }
             sessionBuilder.setSessionActivity(
                 PendingIntent.getActivity(
-                    applicationContext, 2000, intent,
+                    applicationContext,
+                    2000,
+                    intent,
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
             )
         }
 
         sessionBuilder.setCallback(object : MediaSession.Callback {
+
             override fun onPlaybackResumption(
                 session: MediaSession,
                 controller: MediaSession.ControllerInfo
@@ -88,6 +91,24 @@ class PlaybackService: MediaSessionService() {
                 }
                 return super.onCustomCommand(session, controller, customCommand, args)
             }
+
+            override fun onPlayerCommandRequest(
+                session: MediaSession,
+                controller: MediaSession.ControllerInfo,
+                playerCommand: Int
+            ): Int {
+                return when (playerCommand) {
+                    Player.COMMAND_SEEK_TO_NEXT -> {
+                        PlayerLib.instance.config.onCategoryNextCommand?.invoke()
+                        SessionResult.RESULT_ERROR_NOT_SUPPORTED
+                    }
+                    Player.COMMAND_SEEK_TO_PREVIOUS -> {
+                        PlayerLib.instance.config.onCategoryPrevCommand?.invoke()
+                        SessionResult.RESULT_ERROR_NOT_SUPPORTED
+                    }
+                    else -> SessionResult.RESULT_SUCCESS
+                }
+            }
         })
 
         mediaSession = sessionBuilder.build()
@@ -97,9 +118,7 @@ class PlaybackService: MediaSessionService() {
         super.onTaskRemoved(rootIntent)
         PlayerLib.instance.config.onTaskRemoved?.invoke()
         val player = mediaSession?.player!!
-        if (!player.playWhenReady
-            || player.mediaItemCount == 0
-            || player.playbackState == Player.STATE_ENDED) {
+        if (!player.playWhenReady || player.mediaItemCount == 0 || player.playbackState == Player.STATE_ENDED) {
             mediaSession?.player?.removeListener(PlayerLib.instance.playerListener)
             stopSelf()
         }
@@ -120,5 +139,4 @@ class PlaybackService: MediaSessionService() {
         PlayerLib.instance.config.onGetSession?.invoke(mediaSession)
         return mediaSession
     }
-
 }
